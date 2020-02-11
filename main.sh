@@ -371,56 +371,26 @@ fi
 ##############################################################################
 
 function run_apt_get_update() {
-  # Disable errexit as we want to catch the error to display
-  # some informative log messages
-  set +e
-
-  local apt_get
-  local ret
-  
-  info "Refreshing package cache"
-  apt_get=$(DEBIAN_FRONTEND=noninteractive apt-get -q update 2>&1)
-  ret=$?
-
-
-  if [[ "${ret}" -ne 0 ]]; then
+  if ! apt_get=$(DEBIAN_FRONTEND=noninteractive apt-get -q update 2>&1); then
     error "${apt_get}"
     emergency "Package cache refresh failed"
   fi
 
   info "${apt_get}"
   info "Package cache refresh finished"
-
-  # Enable errexit again
-  set -e
 }
 
 function run_apt_get_upgrade() {
-  # Disable errexit as we want to catch the error to display
-  # some informative log messages
-  set +e
-
-  local apt_get
-  local ret
   
-  info "Upgrading packages"
-  apt_get=$( \
-    DEBIAN_FRONTEND=noninteractive \
-    apt-get -qy \
-    dist-upgrade --auto-remove --purge 2>&1)
-  ret=$?
-
-
-  if [[ "${ret}" -ne 0 ]]; then
+  if ! apt_get=$(DEBIAN_FRONTEND=noninteractive \
+      apt-get -qy \
+      dist-upgrade --auto-remove --purge 2>&1); then
     error "${apt_get}"
     emergency "Package upgrade failed"
   fi
 
   info "${apt_get}"
   info "Package upgrade finished"
-
-  # Enable errexit again
-  set -e
 }
 
 function check_do_reboot() {
