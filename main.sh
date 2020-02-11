@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # This file:
 #
-#  - Demos BASH3 Boilerplate (change this for your script)
+#  - Installs package updates depending on the OS package manager
 #
 # Usage:
 #
-#  LOG_LEVEL=7 ./main.sh -f /tmp/x -d (change this for your script)
+#  LOG_LEVEL=7 ./update-packages.sh
 #
 # Based on a template by BASH3 Boilerplate v2.3.0
 # http://bash3boilerplate.sh/#authors
@@ -14,6 +14,8 @@
 # Copyright (c) 2013 Kevin van Zonneveld and contributors
 # You are not obligated to bundle the LICENSE file with your b3bp projects as long
 # as you leave these references intact in the header comments of your source files.
+
+__script_version="0.0.1"
 
 # Exit on error. Append "|| true" if you expect an error.
 set -o errexit
@@ -76,7 +78,7 @@ function __b3bp_log () {
   # shellcheck disable=SC2034
   local color_alert="\x1b[1;33;41m"
   # shellcheck disable=SC2034
-  local color_emergency="\x1b[1;4;5;33;41m"
+  local color_emergency="\x1b[1;4;33;41m"
 
   local colorvar="color_${log_level}"
 
@@ -136,20 +138,20 @@ function help () {
 
 # shellcheck disable=SC2015
 [[ "${__usage+x}" ]] || read -r -d '' __usage <<-'EOF' || true # exits non-zero when EOF encountered
-  -f --file  [arg] Filename to process. Required.
-  -t --temp  [arg] Location of tempfile. Default="/tmp/bar"
+  -z --no-reboot   Skip reboot even if necessary
   -v               Enable verbose mode, print script as it is executed
   -d --debug       Enables debug mode
   -h --help        This page
   -n --no-color    Disable color output
-  -1 --one         Do just one thing
 EOF
 
 # shellcheck disable=SC2015
 [[ "${__helptext+x}" ]] || read -r -d '' __helptext <<-'EOF' || true # exits non-zero when EOF encountered
- This is Bash3 Boilerplate's help text. Feel free to add any description of your
- program or elaborate more on command-line arguments. This section is not
- parsed and will be added as-is to the help.
+ This script updates the OS packages depending on the package manager.
+ Supported Linux distributions:
+ * Ubuntu/Debian (apt-get based)
+ * RHEL/CentOS (yum/dnf based) PLANNED!
+ * Alpine (apk based) PLANNED!
 EOF
 
 # Translate usage string -> getopts arguments, and set $arg_<flag> defaults
@@ -316,7 +318,7 @@ fi
 ##############################################################################
 
 function __b3bp_cleanup_before_exit () {
-  info "Cleaning up. Done"
+  info "Script finished"
 }
 trap __b3bp_cleanup_before_exit EXIT
 
@@ -362,32 +364,104 @@ fi
 ### Validation. Error out if the things required for your script are not present
 ##############################################################################
 
-[[ "${arg_f:-}" ]]     || help      "Setting a filename with -f or --file is required"
 [[ "${LOG_LEVEL:-}" ]] || emergency "Cannot continue without LOG_LEVEL. "
+
+
+### Package manager functions
+##############################################################################
+
+function run_apt_get_update() {
+  # Disable errexit as we want to catch the error to display
+  # some informative log messages
+  set +e
+
+  local apt_get
+  local ret
+  
+  info "Refreshing package cache"
+  apt_get=$(DEBIAN_FRONTEND=noninteractive apt-get -q update 2>&1)
+  ret=$?
+
+
+  if [[ "${ret}" -ne 0 ]]; then
+    error "${apt_get}"
+    emergency "Package cache refresh failed"
+  fi
+
+  info "${apt_get}"
+  info "Package cache refresh finished"
+
+  # Enable errexit again
+  set -e
+}
+
+function run_apt_get_upgrade() {
+  # Disable errexit as we want to catch the error to display
+  # some informative log messages
+  set +e
+
+  local apt_get
+  local ret
+  
+  info "Upgrading packages"
+  apt_get=$( \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get -qy \
+    dist-upgrade --auto-remove --purge 2>&1)
+  ret=$?
+
+
+  if [[ "${ret}" -ne 0 ]]; then
+    error "${apt_get}"
+    emergency "Package upgrade failed"
+  fi
+
+  info "${apt_get}"
+  info "Package upgrade finished"
+
+  # Enable errexit again
+  set -e
+}
+
+function check_do_reboot() {
+  # Check if reboot hint exists
+  if [[ -f /var/run/reboot-required ]]; then
+    info "File /var/run/reboot-required exists"
+
+    # Do not reboot when set on command line
+    if [[ "${arg_z:?}" = "1" ]]; then
+      info "Skipping reboot as requested"
+      return
+    fi
+
+    # Now do the reboot
+    info "Rebooting now"
+    systemctl --message="Package upgrades need reboot" reboot
+  fi
+}
 
 
 ### Runtime
 ##############################################################################
 
-info "__i_am_main_script: ${__i_am_main_script}"
-info "__file: ${__file}"
-info "__dir: ${__dir}"
-info "__base: ${__base}"
-info "OSTYPE: ${OSTYPE}"
+info "Package upgrade version ${__script_version}"
 
-info "arg_f: ${arg_f}"
-info "arg_d: ${arg_d}"
-info "arg_v: ${arg_v}"
-info "arg_h: ${arg_h}"
+info "Getting Linux distribution info based on /etc/os-release"
+if [[ -f /etc/os-release ]]; then
+  . /etc/os-release
+else
+  alert "/etc/os-release missing!"
+  exit 1
+fi
 
-info "$(echo -e "multiple lines example - line #1\nmultiple lines example - line #2\nimagine logging the output of 'ls -al /path/'")"
-
-# All of these go to STDERR, so you can use STDOUT for piping machine readable information to other software
-debug "Info useful to developers for debugging the application, not useful during operations."
-info "Normal operational messages - may be harvested for reporting, measuring throughput, etc. - no action required."
-notice "Events that are unusual but not error conditions - might be summarized in an email to developers or admins to spot potential problems - no immediate action required."
-warning "Warning messages, not an error, but indication that an error will occur if action is not taken, e.g. file system 85% full - each item must be resolved within a given time. This is a debug message"
-error "Non-urgent failures, these should be relayed to developers or admins; each item must be resolved within a given time."
-critical "Should be corrected immediately, but indicates failure in a primary system, an example is a loss of a backup ISP connection."
-alert "Should be corrected immediately, therefore notify staff who can fix the problem. An example would be the loss of a primary ISP connection."
-emergency "A \"panic\" condition usually affecting multiple apps/servers/sites. At this level it would usually notify all tech staff on call."
+case ${ID} in
+  ubuntu)
+    info "Detected Ubuntu ${VERSION}"
+    run_apt_get_update
+    run_apt_get_upgrade
+    check_do_reboot
+    ;;
+  *)
+    emergency "${ID} is not supported by this script"
+    ;;
+esac
