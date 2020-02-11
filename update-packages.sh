@@ -52,6 +52,7 @@ log info "Package upgrade version ${__script_version}"
 
 log info "Getting Linux distribution info based on /etc/os-release"
 if [ -f /etc/os-release ]; then
+  # shellcheck disable=SC1091
   . /etc/os-release
 else
   log fatal "/etc/os-release missing!"
