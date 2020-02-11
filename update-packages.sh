@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -e -u
 
 export DEBIAN_FRONTEND=noninteractive
 __reboot=${REBOOT:-"true"}
@@ -24,6 +24,7 @@ apt_get_upgrade() {
   log info "Doing package upgrade"
   if ! apt-get -qy dist-upgrade --auto-remove --purge; then
     log error "Package upgrade failed"
+    exit 1
   fi
 
   log info "Package upgrade finished"
