@@ -19,10 +19,10 @@ func main() {
 
 func post(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	count++
-	if count == 1 {
-		http.Redirect(w, r, "/somewhere/04052020", 302)
-		fmt.Println("redirected to 04052020")
-	} // else if count == 2 {
+	// if count == 1 {
+	http.Redirect(w, r, "/somewhere/05052020", 302)
+	fmt.Println("redirected to 05052020")
+	// } else if count == 2 {
 	// 	http.Redirect(w, r, "/somewhere/24042020", 302)
 	// 	fmt.Println("redirected to 24042020")
 	// } else {
