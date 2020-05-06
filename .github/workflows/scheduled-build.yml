@@ -1,0 +1,30 @@
+name: Build images for Docker Hub
+on:
+  schedule:
+    - cron: '0 9 * * 1' # every monday at 09:00
+
+jobs:
+  bionic-build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: Docker Login
+        run: docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+      - name: Set Tag
+        run: echo ::set-env name=DATE::$(date "+%Y%m%d")
+      - name: Build Image for Ubuntu Bionic
+        run: docker build --build-arg ubuntu_version=18.04 -t projectsyn/suc-ubuntu-bionic:$DATE .
+      - name: Push Image
+        run: docker push projectsyn/suc-ubuntu-bionic:$DATE
+  focal-build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: Docker Login
+        run: docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+      - name: Set Tag
+        run: echo ::set-env name=DATE::$(date "+%Y%m%d")
+      - name: Build Image
+        run: docker build --build-arg ubuntu_version=20.04 -t projectsyn/suc-ubuntu-focal:$DATE .
+      - name: Push Image
+        run: docker push projectsyn/suc-ubuntu-focal:$DATE
