@@ -10,6 +10,8 @@ log info "Populating apt package list on host"
 rm -rf /host/var/lib/apt/lists/*
 cp -r /var/lib/apt/lists/* /host/var/lib/apt/lists
 
+cp /etc/apt/sources.list /host/etc/apt/sources.list
+
 log info "Copy update script to host"
 
 cp /update-packages.sh /host/tmp/update-packages.sh

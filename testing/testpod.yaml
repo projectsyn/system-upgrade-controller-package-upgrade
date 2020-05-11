@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello
+spec:
+  template:
+    # This is the pod template
+    spec:
+      containers:
+      - name: hello
+        image: kidswiss/ubuntu-update:05052020
+        command: ['sh', '-c', 'echo "Hello, Kubernetes!" && sleep 3600']
+        volumeMounts:
+          - mountPath: /host
+            name: host
+      volumes:
+        - name: host
+          hostPath:
+              path: /
+      restartPolicy: OnFailure
