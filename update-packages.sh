@@ -10,16 +10,6 @@ log() {
   echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC") [${1}] - ${2}"
 }
 
-apt_get_update() {
-  log info "Doing package cache refresh"
-  if ! apt-get -q update; then
-    log error "Package cache refresh failed"
-    exit 1
-  fi
-
-  log info "Package cache refresh finished"
-}
-
 apt_get_upgrade() {
   log info "Doing package upgrade"
   if ! apt-get -qy dist-upgrade --auto-remove --purge; then

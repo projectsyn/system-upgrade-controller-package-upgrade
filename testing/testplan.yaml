@@ -28,6 +28,6 @@ spec:
   channel: http://192.168.5.42:8091/
   #version: "24042020"
   upgrade:
-    image: kidswiss/ubuntu-update
+    image: projectsyn/suc-ubuntu-bionic
     #command: ["chroot", "/host"]
     command: ["/run.sh"]
