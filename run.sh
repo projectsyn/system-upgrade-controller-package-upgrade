@@ -18,4 +18,4 @@ cp /update-packages.sh /host/tmp/update-packages.sh
 
 log info "Chrooting and update"
 
-chroot /host sh /tmp/update-packages.sh
+chroot /host sh /tmp/update-packages.sh "$1"
