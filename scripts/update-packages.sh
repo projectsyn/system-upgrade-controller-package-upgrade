@@ -13,7 +13,10 @@ log() {
 
 list_packages_deb() {
   log info "Listing updated packages and reporting back"
-  python3 "$(pwd)/update_exporter_deb.py" "$prometheus_push_gateway"
+  cd "$(dirname "$0")"
+  # shellcheck disable=SC1091
+  . .venv/bin/activate
+  .venv/bin/python3 "./update_exporter_deb.py" "$prometheus_push_gateway"
 }
 
 apt_get_upgrade() {
@@ -60,7 +63,7 @@ case "${ID}" in
   ubuntu)
     log info "Detected Ubuntu ${VERSION}"
     apt_get_upgrade
-    list_packages
+    list_packages_deb
     check_do_reboot
     ;;
   *)

@@ -3,7 +3,7 @@ set -e
 
 # get the log function
 #shellcheck disable=SC1091
-. /update-packages.sh
+. /scripts/update-packages.sh
 
 log info "Populating apt package list on host"
 
@@ -14,8 +14,8 @@ cp /etc/apt/sources.list /host/etc/apt/sources.list
 
 log info "Copy update script to host"
 
-cp /update-packages.sh /host/tmp/update-packages.sh
+cp -r /scripts/. /host/tmp/
 
 log info "Chrooting and update"
 
-chroot /host sh /tmp/update-packages.sh "$1"
+chroot /host bash /tmp/update-packages.sh "$1"
