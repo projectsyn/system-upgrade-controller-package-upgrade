@@ -15,7 +15,7 @@ FROM docker.io/ubuntu:$ubuntu_version
 
 COPY --from=builder /scripts/ /scripts
 
-RUN apt-get update && apt-get install -y curl software-properties-common && \
+RUN apt-get update && apt-get install -y curl software-properties-common dnsutils && \
     add-apt-repository universe && \
     add-apt-repository multiverse && \
     add-apt-repository restricted && \
