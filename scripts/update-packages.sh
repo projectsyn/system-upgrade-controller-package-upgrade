@@ -1,13 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e -u
 
 export DEBIAN_FRONTEND=noninteractive
 __reboot=${REBOOT:-"true"}
 __script_version="0.0.1"
+prometheus_push_gateway="${1:-}"
 
-log() {
-  echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC") [${1}] - ${2}"
+#shellcheck disable=SC1090
+. "$(dirname "$0")/functions.sh"
+
+list_packages_deb() {
+  log info "Listing updated packages and reporting back"
+  log info "Push gateway: $prometheus_push_gateway"
+  cd "$(dirname "$0")"
+  # shellcheck disable=SC1091
+  . .venv/bin/activate
+  .venv/bin/python3 "./update_exporter_deb.py" "$prometheus_push_gateway"
 }
 
 apt_get_upgrade() {
@@ -54,6 +63,7 @@ case "${ID}" in
   ubuntu)
     log info "Detected Ubuntu ${VERSION}"
     apt_get_upgrade
+    list_packages_deb
     check_do_reboot
     ;;
   *)

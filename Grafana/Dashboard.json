@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -27,7 +27,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "RANCHER_MONITORING",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -63,7 +63,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "count(kube_job_status_succeeded{namespace=\"system-upgrade\"} == 1) by (node)",
+          "expr": "count(kube_job_status_succeeded{namespace=\"syn-system-upgrade-controller\"} == 1) by (node)",
           "instant": false,
           "interval": "",
           "legendFormat": "Nodes completed",
@@ -77,13 +77,13 @@
           "refId": "B"
         },
         {
-          "expr": "count(kube_job_status_failed{namespace=\"system-upgrade\"} > 1) by (node) ",
+          "expr": "count(kube_job_status_failed{namespace=\"syn-system-upgrade-controller\"} > 1) by (node) ",
           "interval": "",
           "legendFormat": "Jobs failed",
           "refId": "C"
         },
         {
-          "expr": "sum(kube_job_status_active{namespace=\"system-upgrade\"} == 1) by (node)",
+          "expr": "sum(kube_job_status_active{namespace=\"syn-system-upgrade-controller\"} == 1) by (node)",
           "interval": "",
           "legendFormat": "Running Jobs",
           "refId": "D"
@@ -138,7 +138,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "RANCHER_MONITORING",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -229,23 +229,24 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "RANCHER_MONITORING",
       "fontSize": "100%",
       "gridPos": {
-        "h": 7,
-        "w": 24,
+        "h": 8,
+        "w": 12,
         "x": 0,
         "y": 9
       },
       "hideTimeOverride": false,
       "id": 6,
       "interval": "",
+      "options": {},
       "pageSize": null,
       "repeat": null,
       "showHeader": true,
       "sort": {
-        "col": null,
-        "desc": false
+        "col": 15,
+        "desc": true
       },
       "styles": [
         {
@@ -288,7 +289,114 @@
         },
         {
           "alias": "",
-          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/label_k3s:*|Value|kubernetes_.*|__name__|instance|app_kubernetes_io_.*|job|helm.*/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Node",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "node",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        },
+        {
+          "alias": "Upgrade Hash",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/label_plan_upgrade_cattle_io_.*/",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "expr": "kube_node_labels",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Node table",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": "RANCHER_MONITORING",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 8,
+      "options": {},
+      "pageSize": null,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "hidden"
+        },
+        {
+          "alias": "",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -302,37 +410,63 @@
           "thresholds": [],
           "type": "hidden",
           "unit": "short"
+        },
+        {
+          "alias": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/__name__|endpoint|job|namespace|pod|service/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
         }
       ],
       "targets": [
         {
-          "expr": "max(kube_node_labels) by (label_plan_upgrade_cattle_io_bionic,node)",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{node}}: {{label_plan_upgrade_cattle_io_bionic}}",
+          "expr": "suc_package_upgraded",
+          "format": "table",
+          "instant": true,
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Node table",
-      "transform": "timeseries_aggregations",
+      "title": "Updated Packages",
+      "transform": "table",
       "type": "table"
     }
   ],
-  "refresh": false,
-  "schemaVersion": 22,
+  "refresh": "5s",
+  "schemaVersion": 21,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "2020-04-29T12:08:45.989Z",
-    "to": "2020-04-29T15:00:13.206Z"
+    "from": "now-1h",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -351,8 +485,5 @@
   "timezone": "",
   "title": "SUC overview",
   "uid": "Ut3fVneZz",
-  "variables": {
-    "list": []
-  },
-  "version": 11
+  "version": 1
 }

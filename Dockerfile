@@ -1,7 +1,21 @@
 ARG ubuntu_version=18.04
+
+FROM docker.io/ubuntu:$ubuntu_version as builder
+
+SHELL ["/bin/bash", "-c"]
+
+COPY scripts/ /scripts
+
+RUN apt-get update && apt-get install -y python3 python3-venv python3-pip && \
+    cd /scripts && \
+    python3 -m venv .venv && source .venv/bin/activate && \
+    pip3 install prometheus_client
+
 FROM docker.io/ubuntu:$ubuntu_version
 
-RUN apt-get update && apt-get install -y curl software-properties-common && \
+COPY --from=builder /scripts/ /scripts
+
+RUN apt-get update && apt-get install -y curl software-properties-common dnsutils && \
     add-apt-repository universe && \
     add-apt-repository multiverse && \
     add-apt-repository restricted && \
@@ -12,6 +26,3 @@ RUN apt-get update && apt-get install -y curl software-properties-common && \
     $(lsb_release -cs) \
     stable" && \
     apt-get update
-
-COPY run.sh /run.sh
-COPY update-packages.sh /update-packages.sh
