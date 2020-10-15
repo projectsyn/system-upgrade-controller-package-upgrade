@@ -19,6 +19,11 @@ list_packages_deb() {
   .venv/bin/python3 "./update_exporter_deb.py" "$prometheus_push_gateway"
 }
 
+install_policy_rc_d() {
+  log info "Installing /usr/sbin/policy-rc.d"
+  cp "$(dirname "$0")/policy-rc.d" /usr/sbin/policy-rc.d
+}
+
 apt_get_upgrade() {
   log info "Doing package upgrade"
   if ! apt-get -qy dist-upgrade --auto-remove --purge; then
@@ -62,6 +67,7 @@ fi
 case "${ID}" in
   ubuntu)
     log info "Detected Ubuntu ${VERSION}"
+    install_policy_rc_d
     apt_get_upgrade
     list_packages_deb
     check_do_reboot
