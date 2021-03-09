@@ -27,8 +27,8 @@ shift $((OPTIND -1))
 log info "Get IP address of the push gateway"
 
 host=$(echo "$1" | cut -d ':' -f 1)
-port=$(echo "$1" | cut -d ':' -f 2)
-[ -n "$1" ] && pgw=$(dig +short "$host")
+port=$(echo "$1" | cut -d ':' -f 2 -s)
+[ -n "$1" ] && pgw=$(dig +short "$host" | tail -1)
 # If it's still empty it was either:
 # empty to begin with
 # an IP address
