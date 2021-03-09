@@ -24,6 +24,16 @@ install_policy_rc_d() {
   cp "$(dirname "$0")/policy-rc.d" /usr/sbin/policy-rc.d
 }
 
+apt_get_update() {
+  log info "Updating package lists"
+  if ! apt-get update; then
+    log error "Updating package lists failed"
+    exit 1
+  fi
+
+  log info "Package lists updated"
+}
+
 apt_get_upgrade() {
   log info "Doing package upgrade"
   if ! apt-get -qy dist-upgrade --auto-remove --purge; then
@@ -68,6 +78,9 @@ case "${ID}" in
   ubuntu)
     log info "Detected Ubuntu ${VERSION}"
     install_policy_rc_d
+    if [ "$2" -eq 1 ]; then
+      apt_get_update
+    fi
     apt_get_upgrade
     list_packages_deb
     check_do_reboot
