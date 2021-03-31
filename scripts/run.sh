@@ -5,13 +5,6 @@ set -e
 #shellcheck disable=SC1091
 . /scripts/functions.sh
 
-log info "Populating apt package list on host"
-
-rm -rf /host/var/lib/apt/lists/*
-cp -r /var/lib/apt/lists/* /host/var/lib/apt/lists
-
-cp /etc/apt/sources.list /host/etc/apt/sources.list
-
 while getopts "u" opt; do
     case "${opt}" in
         u)
@@ -23,6 +16,17 @@ while getopts "u" opt; do
     esac
 done
 shift $((OPTIND -1))
+
+# Don't do apt-get update during maintenance window by default
+[ -z "$aptupdate" ] && aptupdate=0
+
+rm -rf /host/var/lib/apt/lists/*
+cp /etc/apt/sources.list /host/etc/apt/sources.list
+
+if [ "$aptupdate" -eq 0 ]; then
+	log info "Populating apt package list on host"
+	cp -r /var/lib/apt/lists/* /host/var/lib/apt/lists
+fi
 
 log info "Get IP address of the push gateway"
 
@@ -38,9 +42,6 @@ port=$(echo "$1" | cut -d ':' -f 2 -s)
 [ -z "$pgw" ] && pgw="$1"
 
 log info "Found: $pgw"
-
-# Don't do apt-get update during maintenance window by default
-[ -z "$aptupdate" ] && aptupdate=0
 
 if [ "$aptupdate" -eq 1 ]; then
     log info "User requested apt-get update during maintenance window"
