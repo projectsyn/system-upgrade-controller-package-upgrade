@@ -1,0 +1,32 @@
+name: Build images for Docker Hub
+on:
+  schedule:
+    - cron: '0 9 * * 1' # every monday at 09:00
+  push:
+    branches:
+      - master
+
+jobs:
+  builds:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        include:
+          - ubuntu_version: 18.04
+            ubuntu_name: bionic
+          - ubuntu_version: 20.04
+            ubuntu_name: focal
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker Login
+        run: docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+      - name: Set Tag for scheduled build
+        run: echo "TAG=$(date +%Y%m%d)" >> ${GITHUB_ENV}
+        if: ${{ github.event_name == 'schedule' }}
+      - name: Set Tag for build of master branch
+        run: echo "TAG=latest" >> ${GITHUB_ENV}
+        if: ${{ github.event_name == 'push' }}
+      - name: Build Image for Ubuntu ${{ matrix.ubuntu_name }}
+        run: docker build --build-arg ubuntu_version=18.04 -t projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG .
+      - name: Push Image
+        run: docker push projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG

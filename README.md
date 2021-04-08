@@ -17,3 +17,13 @@ testing contains some scripts and test objects useful for development and, you g
 Arguments:
 * `-u`: Run `apt-get upgrade` during maintenance window, otherwise use cached package lists from Docker image.
 * `pushgateway_url`: URL of Prometheus pushgateway. Used to push detailed upgrade job metrics into Prometheus.
+
+## Docker images
+
+Images are avaiable on DockerHub for
+
+* [Ubuntu Bionic](https://hub.docker.com/r/projectsyn/suc-ubuntu-bionic)
+* [Ubuntu Focal](https://hub.docker.com/r/projectsyn/suc-ubuntu-focal)
+
+* Every Monday, at 9:00 UTC new images are built and pushed to DockerHub using the date (formatted as `YYYYMMDD`) as the tag.
+* On pushes to `master`, images are built and pushed to DockerHub using tag `latest`.
