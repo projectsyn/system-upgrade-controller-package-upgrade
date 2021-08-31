@@ -27,3 +27,4 @@ Images are avaiable on DockerHub for
 
 * Every Monday, at 9:00 UTC new images are built and pushed to DockerHub using the date (formatted as `YYYYMMDD`) as the tag.
 * On pushes to `master`, images are built and pushed to DockerHub using tag `latest`.
+
