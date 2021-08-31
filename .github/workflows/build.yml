@@ -27,6 +27,6 @@ jobs:
         run: echo "TAG=latest" >> ${GITHUB_ENV}
         if: ${{ github.event_name == 'push' }}
       - name: Build Image for Ubuntu ${{ matrix.ubuntu_name }}
-        run: docker build --build-arg ubuntu_version={{ matrix.ubuntu_version }} -t projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG .
+        run: docker build --build-arg ubuntu_version=${{ matrix.ubuntu_version }} -t projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG .
       - name: Push Image
         run: docker push projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG
