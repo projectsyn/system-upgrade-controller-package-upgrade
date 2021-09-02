@@ -10,8 +10,10 @@ while getopts "u" opt; do
         u)
             aptupdate=1
             ;;
+        s)  sourcelist=1
+            ;;
         *)
-            echo "Usage $0 [-u] [PUSHGATEWAY]"
+            echo "Usage $0 [-u] [-s] [PUSHGATEWAY]"
             ;;
     esac
 done
@@ -20,8 +22,15 @@ shift $((OPTIND -1))
 # Don't do apt-get update during maintenance window by default
 [ -z "$aptupdate" ] && aptupdate=0
 
+# Override the host source list with the source list of the docker image
+[ -z "$sourcelist" ] && sourcelist=0
+
 rm -rf /host/var/lib/apt/lists/*
-cp /etc/apt/sources.list /host/etc/apt/sources.list
+
+if [ "$sourcelist" -eq 0 ]; then
+	log info "Populating apt source list on host"
+	cp /etc/apt/sources.list /host/etc/apt/sources.list
+fi
 
 if [ "$aptupdate" -eq 0 ]; then
 	log info "Populating apt package list on host"
