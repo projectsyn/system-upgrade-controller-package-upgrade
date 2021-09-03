@@ -5,7 +5,7 @@ set -e
 #shellcheck disable=SC1091
 . /scripts/functions.sh
 
-while getopts "u" opt; do
+while getopts "us" opt; do
     case "${opt}" in
         u)
             aptupdate=1
