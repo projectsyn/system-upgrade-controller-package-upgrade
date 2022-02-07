@@ -1,6 +1,7 @@
 from datetime import date
 import argparse
 import socket
+import sys
 from prometheus_client import CollectorRegistry, Gauge, pushadd_to_gateway, instance_ip_grouping_key
 
 
@@ -35,8 +36,12 @@ def main():
                 version = splitted_line[5].strip()
                 g.labels(package, version, 'apt').set(1)
 
-    pushadd_to_gateway(args.url, job='suc', registry=registry,
-                       grouping_key={'instance': socket.gethostname()})
+    try:
+        pushadd_to_gateway(args.url, job='suc', registry=registry,
+                           grouping_key={'instance': socket.gethostname()})
+    except Exception as e:
+        print(f'Unable to push metrics to push gateway at {args.url}: {e}')
+        sys.exit(1)
 
 
 if __name__ == "__main__":
