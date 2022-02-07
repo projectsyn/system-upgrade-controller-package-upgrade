@@ -16,7 +16,10 @@ list_packages_deb() {
   cd "$(dirname "$0")"
   # shellcheck disable=SC1091
   . .venv/bin/activate
-  .venv/bin/python3 "./update_exporter_deb.py" "$prometheus_push_gateway"
+  # We want to ignore error return codes from `update_exporter_deb.py` since
+  # failing to push an update to Prometheus shouldn't fail the maintenance for
+  # a node.
+  .venv/bin/python3 "./update_exporter_deb.py" "$prometheus_push_gateway" || true
 }
 
 install_policy_rc_d() {
