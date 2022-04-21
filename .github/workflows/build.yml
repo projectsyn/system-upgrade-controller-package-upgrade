@@ -30,3 +30,9 @@ jobs:
         run: docker build --build-arg ubuntu_version=${{ matrix.ubuntu_version }} -t projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG .
       - name: Push Image
         run: docker push projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG
+      - name: GitHub Actions Keepalive
+        uses: gautamkrishnar/keepalive-workflow@1.0.7
+        with:
+          commit_message: Dummy commit to keep GitHub actions active
+          committer_username: github-actions
+          committer_email: tech+github-actions@vshn.ch
