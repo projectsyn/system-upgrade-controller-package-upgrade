@@ -31,6 +31,9 @@ jobs:
       - name: Push Image
         run: docker push projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG
       - name: GitHub Actions Keepalive
+        # Only execute keepalive on scheduled runs and only for one matrix
+        # element.
+        if: ${{ github.event_name == 'schedule' && matrix.ubuntu_name == 'focal' }}
         uses: gautamkrishnar/keepalive-workflow@1.0.7
         with:
           commit_message: Dummy commit to keep GitHub actions active
