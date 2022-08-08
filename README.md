@@ -15,7 +15,7 @@ testing contains some scripts and test objects useful for development and, you g
 ```
 
 Arguments:
-* `-u`: Run `apt-get update` during maintenance window, otherwise use cached package lists from Docker image.
+* `-p`: Don't run `apt-get update` during maintenance window, but use cached package lists from Docker image.
 * `-s`: Don't override the sources.list on the host with the one from the docker image.
 * `pushgateway_url`: URL of Prometheus pushgateway. Used to push detailed upgrade job metrics into Prometheus.
 

@@ -5,10 +5,14 @@ set -e
 #shellcheck disable=SC1091
 . /scripts/functions.sh
 
-while getopts "us" opt; do
+while getopts "ups" opt; do
     case "${opt}" in
         u)
-            aptupdate=1
+            log warn "The flag '-u' is deprecated and script does apt-get update by default"
+            ;;
+        p)
+          # Use cached apt package list
+            aptupdate=0
             ;;
         s)  sourcelist=1
             ;;
@@ -19,8 +23,8 @@ while getopts "us" opt; do
 done
 shift $((OPTIND -1))
 
-# Don't do apt-get update during maintenance window by default
-[ -z "$aptupdate" ] && aptupdate=0
+# Do apt-get update during maintenance window by default
+[ -z "$aptupdate" ] && aptupdate=1
 
 # Override the host source list with the source list of the docker image
 [ -z "$sourcelist" ] && sourcelist=0
