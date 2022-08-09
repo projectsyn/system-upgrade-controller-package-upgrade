@@ -8,7 +8,7 @@ set -e
 while getopts "ups" opt; do
     case "${opt}" in
         u)
-            log warn "The flag '-u' is deprecated and script does apt-get update by default"
+            log warn "The flag '-u' is deprecated. The script does apt-get update by default. Use -p to use the package lists from the image."
             ;;
         p)
           # Use cached apt package list
