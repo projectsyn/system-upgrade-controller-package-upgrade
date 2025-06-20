@@ -25,6 +25,7 @@ Images are avaiable on DockerHub for
 
 * [Ubuntu Bionic](https://hub.docker.com/r/projectsyn/suc-ubuntu-bionic)
 * [Ubuntu Focal](https://hub.docker.com/r/projectsyn/suc-ubuntu-focal)
+* [Ubuntu Jammy](https://hub.docker.com/r/projectsyn/suc-ubuntu-jammy)
 
 * Every Monday, at 9:00 UTC new images are built and pushed to DockerHub using the date (formatted as `YYYYMMDD`) as the tag.
 * On pushes to `master`, images are built and pushed to DockerHub using tag `latest`.

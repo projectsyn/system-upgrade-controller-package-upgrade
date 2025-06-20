@@ -16,6 +16,8 @@ jobs:
             ubuntu_name: bionic
           - ubuntu_version: 20.04
             ubuntu_name: focal
+          - ubuntu_version: 22.04
+            ubuntu_name: jammy
     steps:
       - uses: actions/checkout@v2
       - name: Docker Login
