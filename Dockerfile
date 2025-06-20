@@ -1,6 +1,6 @@
 ARG ubuntu_version=18.04
 
-FROM docker.io/ubuntu:$ubuntu_version as builder
+FROM docker.io/ubuntu:$ubuntu_version AS builder
 
 SHELL ["/bin/bash", "-c"]
 
