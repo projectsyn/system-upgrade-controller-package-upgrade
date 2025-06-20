@@ -1,7 +1,7 @@
 name: Build images for Docker Hub
 on:
   schedule:
-    - cron: '0 9 * * 1' # every monday at 09:00
+    - cron: '0 9 * * 1' # every Monday at 09:00 UTC
   push:
     branches:
       - master
