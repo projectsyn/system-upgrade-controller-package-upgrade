@@ -32,3 +32,23 @@ jobs:
         run: docker build --build-arg ubuntu_version=${{ matrix.ubuntu_version }} -t projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG .
       - name: Push Image
         run: docker push projectsyn/suc-ubuntu-${{ matrix.ubuntu_name }}:$TAG
+
+  # Adapted from https://github.com/liskin/gh-workflow-keepalive to
+  # avoid depending on that action.
+  keepalive:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Enable workflow through API
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          case "${GITHUB_WORKFLOW_REF:?}" in
+            "${GITHUB_REPOSITORY:?}"/.github/workflows/*.y*ml@*) ;;
+            *) false ;;
+          esac
+          workflow="${GITHUB_WORKFLOW_REF%%@*}"
+          workflow="${workflow#${GITHUB_REPOSITORY}/.github/workflows/}"
+          gh api -X PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/enable"
